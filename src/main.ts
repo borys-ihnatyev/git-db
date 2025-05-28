@@ -3,8 +3,8 @@ import express, {
   type ErrorRequestHandler,
   type RequestHandler,
 } from "express";
-import db, { DeleteFilePayload, ModifyFilePayload } from "./db";
-import ErrorResult, { ErrorResponseJSON } from "./ErrorResult";
+import db, { DeleteFilePayload, ModifyFilePayload } from "./core/db";
+import ErrorResult, { ErrorResponseJSON } from "./core/ErrorResult";
 
 const PORT = 3000;
 

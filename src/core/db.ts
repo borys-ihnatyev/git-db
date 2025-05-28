@@ -2,7 +2,7 @@ import path from "path";
 import fs from "fs/promises";
 import { statSync } from "fs";
 import { type CommitResult, simpleGit } from "simple-git";
-import { DB_PATH } from "../env";
+import { DB_PATH } from "../../env";
 import ErrorResult from "./ErrorResult";
 
 try {
