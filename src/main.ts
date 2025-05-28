@@ -22,7 +22,7 @@ const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
 express()
   .use(bodyParser.json())
   .use(contentRouter)
-  .use("/static", express.static(DB_PATH))
+  .use(express.static(DB_PATH))
   .use(notFoundErrorHandler)
   .use(globalErrorHandler)
   .listen(PORT, () => {
