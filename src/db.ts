@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs/promises";
 import { statSync } from "fs";
-import { simpleGit } from "simple-git";
+import { type CommitResult, simpleGit } from "simple-git";
 import { DB_PATH } from "../env";
 
 try {
@@ -19,7 +19,11 @@ export type ContentShape = {
 };
 
 export type ModifyFilePayload = ContentShape & {
-  revisionMessage?: string;
+  commitMessage?: string;
+};
+
+export type ModifyFileResult = Required<ModifyFilePayload> & {
+  commitResult: CommitResult;
 };
 
 const db = {
@@ -44,15 +48,22 @@ const db = {
   async modifyFile(
     fileName: string,
     payload: ModifyFilePayload
-  ): Promise<Required<ModifyFilePayload>> {
+  ): Promise<ModifyFileResult> {
     const sanitizedFileName = db.sanitizeFileName(fileName);
     const filePath = db.resolveFilePath(fileName);
     await fs.writeFile(filePath, payload.content);
 
-    const revisionMessage = payload.revisionMessage ?? "no description";
-    await git.add(sanitizedFileName).commit(revisionMessage);
+    const revisionMessage = payload.commitMessage ?? "no description";
 
-    return { content: payload.content, revisionMessage };
+    const commitResult = await git
+      .add(sanitizedFileName)
+      .commit(revisionMessage);
+
+    return {
+      content: payload.content,
+      commitMessage: commitResult.commit ? revisionMessage : "",
+      commitResult,
+    };
   },
 } as const;
 
