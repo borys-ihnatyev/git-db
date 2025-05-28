@@ -1,7 +1,16 @@
 import path from "path";
 import fs from "fs/promises";
+import { statSync } from "fs";
 import { simpleGit } from "simple-git";
-import { DB_CONTENT_PATH, DB_PATH } from "../env";
+import { DB_PATH } from "../env";
+
+try {
+  statSync(DB_PATH);
+} catch {
+  console.warn(`You need to bootstrap database at ${DB_PATH}`);
+  console.log(`use npm run bootstrap`);
+  process.exit(-1);
+}
 
 const git = simpleGit(DB_PATH);
 
@@ -14,13 +23,16 @@ export type ModifyFilePayload = ContentShape & {
 };
 
 const db = {
+  sanitizeFileName(rawFileName: string): string {
+    return path.basename(rawFileName);
+  },
+
   resolveFilePath(fileName: string): string {
-    const sanitizedFileName = path.basename(fileName);
-    return path.resolve(DB_CONTENT_PATH, sanitizedFileName);
+    return path.resolve(DB_PATH, db.sanitizeFileName(fileName));
   },
 
   async listFiles(): Promise<string[]> {
-    return await fs.readdir(DB_CONTENT_PATH);
+    return await fs.readdir(DB_PATH);
   },
 
   async readFile(fileName: string): Promise<ContentShape> {
@@ -33,11 +45,12 @@ const db = {
     fileName: string,
     payload: ModifyFilePayload
   ): Promise<Required<ModifyFilePayload>> {
+    const sanitizedFileName = db.sanitizeFileName(fileName);
     const filePath = db.resolveFilePath(fileName);
     await fs.writeFile(filePath, payload.content);
 
     const revisionMessage = payload.revisionMessage ?? "no description";
-    await git.commit(revisionMessage, filePath);
+    await git.add(sanitizedFileName).commit(revisionMessage);
 
     return { content: payload.content, revisionMessage };
   },
