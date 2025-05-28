@@ -5,7 +5,7 @@ import express, {
 } from "express";
 import ErrorResult, { ErrorResponseJSON } from "./core/ErrorResult";
 import contentRouter from "./contentRouter";
-import { PORT } from "../env";
+import { DB_PATH, PORT } from "../env";
 
 const notFoundErrorHandler: RequestHandler = (req, res, next) => {
   next(new ErrorResult("Not found", 404));
@@ -22,6 +22,7 @@ const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
 express()
   .use(bodyParser.json())
   .use(contentRouter)
+  .use("/static", express.static(DB_PATH))
   .use(notFoundErrorHandler)
   .use(globalErrorHandler)
   .listen(PORT, () => {
