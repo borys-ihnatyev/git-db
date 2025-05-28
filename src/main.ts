@@ -4,24 +4,20 @@ import express, {
   type RequestHandler,
 } from "express";
 import db, { ModifyFilePayload } from "./db";
+import ErrorResult, { ErrorResponseJSON } from "./ErrorResult";
 
 const PORT = 3000;
 
-type ErrorResponse = {
-  status?: number;
-  message: string;
-};
-
 const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
-  const maybeErrorResponse = error as Partial<ErrorResponse> | undefined;
-  const status = maybeErrorResponse?.status || 500;
-  const message = maybeErrorResponse?.message || "Unknown error";
+  const maybeError = error as Partial<ErrorResult> | undefined;
+  const message = maybeError?.message || "Unknown error";
+  const status = maybeError?.status || 500;
 
-  res.status(status).send({ status, message } satisfies ErrorResponse);
+  res.status(status).send({ status, message } satisfies ErrorResponseJSON);
 };
 
 const notFoundErrorHandler: RequestHandler = (req, res, next) => {
-  next({ status: 404, message: "Not found" } satisfies ErrorResponse);
+  next(new ErrorResult("Not found", 404));
 };
 
 const app = express();
@@ -43,11 +39,7 @@ app
     const payload = req.body as ModifyFilePayload;
 
     if (!("content" in payload) || typeof payload.content !== "string") {
-      const errorResponse: ErrorResponse = {
-        status: 400,
-        message: "Expecting {content: string} body",
-      };
-      next(errorResponse);
+      next(new ErrorResult("Expecting {content: string} body", 400));
       return;
     }
 

@@ -3,6 +3,7 @@ import fs from "fs/promises";
 import { statSync } from "fs";
 import { type CommitResult, simpleGit } from "simple-git";
 import { DB_PATH } from "../env";
+import ErrorResult from "./ErrorResult";
 
 try {
   statSync(DB_PATH);
@@ -28,7 +29,11 @@ export type ModifyFileResult = Required<ModifyFilePayload> & {
 
 const db = {
   sanitizeFileName(rawFileName: string): string {
-    return path.basename(rawFileName);
+    const fileName = path.basename(rawFileName);
+    if (fileName === ".git") {
+      throw new ErrorResult("Illegal file name", 400);
+    }
+    return fileName;
   },
 
   resolveFilePath(fileName: string): string {
