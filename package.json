@@ -2,7 +2,9 @@
   "name": "git-db",
   "version": "1.0.0",
   "main": "src/main.ts",
+  "private": true,
   "scripts": {
+    "bootstrap": "ts-node scripts/bootstrap.ts",
     "start": "nodemon",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

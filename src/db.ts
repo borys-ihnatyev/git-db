@@ -1,9 +1,7 @@
 import path from "path";
 import fs from "fs/promises";
 import { simpleGit } from "simple-git";
-
-const DB_PATH = path.resolve(__dirname, "..", "db");
-export const DB_CONTENT_PATH = path.resolve(DB_PATH, "content");
+import { DB_CONTENT_PATH, DB_PATH } from "../env";
 
 const git = simpleGit(DB_PATH);
 
