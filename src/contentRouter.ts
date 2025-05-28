@@ -12,13 +12,12 @@ export default Router()
     res.send(await db.readFile(fileName));
   })
 
-  .post("/content/:fileName", async (req, res, next) => {
+  .post("/content/:fileName", async (req, res) => {
     const { fileName } = req.params;
     const payload = req.body as ModifyFilePayload;
 
     if (!("content" in payload) || typeof payload.content !== "string") {
-      next(new ErrorResult("Expecting {content: string} body", 400));
-      return;
+      throw new ErrorResult("Expecting {content: string} body", 400);
     }
 
     res.send(await db.modifyFile(fileName, payload));

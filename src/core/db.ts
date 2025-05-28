@@ -5,16 +5,6 @@ import { type CommitResult, simpleGit } from "simple-git";
 import { DB_PATH } from "../../env";
 import ErrorResult from "./ErrorResult";
 
-try {
-  statSync(DB_PATH);
-} catch {
-  console.warn(`You need to bootstrap database at ${DB_PATH}`);
-  console.log(`use npm run bootstrap`);
-  process.exit(-1);
-}
-
-const git = simpleGit(DB_PATH);
-
 type OperationPayload = {
   commitMessage?: string;
 };
@@ -34,10 +24,22 @@ export type ModifyFileResult = ContentShape & OperationResult;
 export type DeleteFilePayload = OperationPayload | undefined;
 export type DeleteFileResult = Partial<ContentShape> & OperationResult;
 
+const GIT_DIR_NAME = ".git";
+
+try {
+  statSync(DB_PATH);
+} catch {
+  console.warn(`You need to bootstrap database at ${DB_PATH}`);
+  console.log(`use npm run bootstrap`);
+  process.exit(-1);
+}
+
+const git = simpleGit(DB_PATH);
+
 const db = {
   sanitizeFileName(rawFileName: string): string {
     const fileName = path.basename(rawFileName);
-    if (fileName === ".git") {
+    if (fileName === GIT_DIR_NAME) {
       throw new ErrorResult("Illegal operation", 400);
     }
     return fileName;
@@ -48,13 +50,21 @@ const db = {
   },
 
   async listFiles(): Promise<string[]> {
-    return await fs.readdir(DB_PATH);
+    return (await fs.readdir(DB_PATH)).filter((name) => name !== GIT_DIR_NAME);
   },
 
   async readFile(fileName: string): Promise<ContentShape> {
+    const sanitizedFileName = db.sanitizeFileName(fileName);
     const filePath = db.resolveFilePath(fileName);
-    const content = await fs.readFile(filePath, { encoding: "utf-8" });
-    return { content };
+    try {
+      const content = await fs.readFile(filePath, { encoding: "utf-8" });
+      return { content };
+    } catch (error: any) {
+      if (error?.code === "ENOENT") {
+        throw new ErrorResult(`File ${sanitizedFileName} was not found`, 404);
+      }
+      throw error;
+    }
   },
 
   async modifyFile(
