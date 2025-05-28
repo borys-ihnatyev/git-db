@@ -15,23 +15,30 @@ try {
 
 const git = simpleGit(DB_PATH);
 
+type OperationPayload = {
+  commitMessage?: string;
+};
+
+type OperationResult = Required<OperationPayload> & {
+  commitResult: CommitResult;
+};
+
 export type ContentShape = {
   content: string;
 };
 
-export type ModifyFilePayload = ContentShape & {
-  commitMessage?: string;
-};
+export type ModifyFilePayload = ContentShape & OperationPayload;
 
-export type ModifyFileResult = Required<ModifyFilePayload> & {
-  commitResult: CommitResult;
-};
+export type ModifyFileResult = ContentShape & OperationResult;
+
+export type DeleteFilePayload = OperationPayload | undefined;
+export type DeleteFileResult = Partial<ContentShape> & OperationResult;
 
 const db = {
   sanitizeFileName(rawFileName: string): string {
     const fileName = path.basename(rawFileName);
     if (fileName === ".git") {
-      throw new ErrorResult("Illegal file name", 400);
+      throw new ErrorResult("Illegal operation", 400);
     }
     return fileName;
   },
@@ -58,7 +65,8 @@ const db = {
     const filePath = db.resolveFilePath(fileName);
     await fs.writeFile(filePath, payload.content);
 
-    const revisionMessage = payload.commitMessage ?? "no description";
+    const revisionMessage =
+      payload.commitMessage ?? `modify ${sanitizedFileName}`;
 
     const commitResult = await git
       .add(sanitizedFileName)
@@ -66,6 +74,35 @@ const db = {
 
     return {
       content: payload.content,
+      commitMessage: commitResult.commit ? revisionMessage : "",
+      commitResult,
+    };
+  },
+
+  async deleteFile(
+    fileName: string,
+    payload: DeleteFilePayload
+  ): Promise<DeleteFileResult> {
+    const sanitizedFileName = db.sanitizeFileName(fileName);
+    const filePath = db.resolveFilePath(fileName);
+    let content: string | undefined;
+
+    try {
+      content = await fs.readFile(filePath, { encoding: "utf-8" });
+      await fs.rm(filePath);
+    } catch {
+      throw new ErrorResult(`File ${sanitizedFileName} was not found`, 404);
+    }
+
+    const revisionMessage =
+      payload?.commitMessage ?? `delete ${sanitizedFileName}`;
+
+    const commitResult = await git
+      .add(sanitizedFileName)
+      .commit(revisionMessage);
+
+    return {
+      content,
       commitMessage: commitResult.commit ? revisionMessage : "",
       commitResult,
     };

@@ -3,7 +3,7 @@ import express, {
   type ErrorRequestHandler,
   type RequestHandler,
 } from "express";
-import db, { ModifyFilePayload } from "./db";
+import db, { DeleteFilePayload, ModifyFilePayload } from "./db";
 import ErrorResult, { ErrorResponseJSON } from "./ErrorResult";
 
 const PORT = 3000;
@@ -44,6 +44,11 @@ app
     }
 
     res.send(await db.modifyFile(fileName, payload));
+  })
+  .delete("/content/:fileName", async (req, res, next) => {
+    const { fileName } = req.params;
+    const payload = req.body as DeleteFilePayload;
+    res.send(await db.deleteFile(fileName, payload));
   })
   .use(notFoundErrorHandler)
   .use(globalErrorHandler);
