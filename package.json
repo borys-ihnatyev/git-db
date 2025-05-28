@@ -1,7 +1,7 @@
 {
   "name": "git-db",
   "version": "1.0.0",
-  "main": "src/main.ts",
+  "main": "api/main.ts",
   "private": true,
   "scripts": {
     "bootstrap": "ts-node scripts/bootstrap.ts",
