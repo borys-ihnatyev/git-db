@@ -1,67 +1,61 @@
 import bodyParser from "body-parser";
-import express from "express";
-import fs from "fs/promises";
-import path from "path";
+import express, {
+  type ErrorRequestHandler,
+  type RequestHandler,
+} from "express";
+import db, { ModifyFilePayload } from "./db";
 
 const PORT = 3000;
 
-const DB_CONTENT_PATH = path.resolve(__dirname, "..", "db", "content");
-
-const db = {
-  resolveFilePath(fileName: string): string {
-    const sanitizedFileName = path.basename(fileName);
-    return path.resolve(DB_CONTENT_PATH, sanitizedFileName);
-  },
-} as const;
-
-type ContentShape =
-  | {
-      content?: string;
-    }
-  | undefined;
-
 type ErrorResponse = {
+  status?: number;
   message: string;
 };
 
-express()
+const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
+  const maybeErrorResponse = error as Partial<ErrorResponse> | undefined;
+  const status = maybeErrorResponse?.status || 500;
+  const message = maybeErrorResponse?.message || "Unknown error";
+
+  res.status(status).send({ status, message } satisfies ErrorResponse);
+};
+
+const notFoundErrorHandler: RequestHandler = (req, res, next) => {
+  next({ status: 404, message: "Not found" } satisfies ErrorResponse);
+};
+
+const app = express();
+
+app
   .use(bodyParser.json())
+
   .get("/content", async (_, res) => {
-    const content = await fs.readdir(DB_CONTENT_PATH);
-    res.send(content);
+    res.send(await db.listFiles());
   })
+
   .get("/content/:fileName", async (req, res) => {
     const { fileName } = req.params;
-    const filePath = db.resolveFilePath(fileName);
-    const content = await fs.readFile(filePath, { encoding: "utf-8" });
-    const data = { content } satisfies ContentShape;
-    res.send(data);
+    res.send(await db.readFile(fileName));
   })
-  .post("/content/:fileName", async (req, res) => {
-    const data = req.body as ContentShape;
-    if (!data?.content) {
-      res.status(400);
+
+  .post("/content/:fileName", async (req, res, next) => {
+    const { fileName } = req.params;
+    const payload = req.body as ModifyFilePayload;
+
+    if (!("content" in payload) || typeof payload.content !== "string") {
       const errorResponse: ErrorResponse = {
+        status: 400,
         message: "Expecting {content: string} body",
       };
-      res.send(errorResponse);
+      next(errorResponse);
       return;
     }
 
-    const { fileName } = req.params;
-    const filePath = db.resolveFilePath(fileName);
-    try {
-      await fs.writeFile(filePath, data.content);
-      res.send(data);
-    } catch (error: unknown) {
-      const errorResponse: ErrorResponse = {
-        message: (error as Error).message || "Unknown error",
-      };
-
-      res.status(404);
-      res.send(errorResponse);
-    }
+    res.send(await db.modifyFile(fileName, payload));
   })
-  .listen(PORT, () => {
-    console.log(`Listening on http://localhost:${PORT}`);
-  });
+  .use(notFoundErrorHandler)
+  .use(globalErrorHandler);
+
+app.listen(PORT, () => {
+  console.log(`Listening on http://localhost:${PORT}`);
+});
