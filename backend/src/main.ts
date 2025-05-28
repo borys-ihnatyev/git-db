@@ -6,6 +6,7 @@ import express, {
 import ErrorResult, { ErrorResponseJSON } from "./core/ErrorResult";
 import contentRouter from "./contentRouter";
 import { DB_PATH, PORT } from "../env";
+import cors from "cors";
 
 const notFoundErrorHandler: RequestHandler = (req, res, next) => {
   next(new ErrorResult("Not found", 404));
@@ -20,6 +21,7 @@ const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
 };
 
 express()
+  .use(cors())
   .use(bodyParser.json())
   .use(contentRouter)
   .use(express.static(DB_PATH))
