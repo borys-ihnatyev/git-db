@@ -5,10 +5,7 @@ import type { AppRouter } from "@git-db/backend";
 
 export const queryClient = new QueryClient();
 
-console.log(import.meta.env.MODE);
-console.log(import.meta.env);
-
-const client = createTRPCClient<AppRouter>({
+export const api = createTRPCClient<AppRouter>({
   links: [
     httpBatchLink({
       url: import.meta.env.VITE_API_URL,
@@ -16,7 +13,7 @@ const client = createTRPCClient<AppRouter>({
   ],
 });
 
-export const api = createTRPCOptionsProxy<AppRouter>({
-  client,
+export const queryApi = createTRPCOptionsProxy<AppRouter>({
+  client: api,
   queryClient,
 });

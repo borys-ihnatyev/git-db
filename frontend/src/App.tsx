@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { api } from "./core/trpcApi.ts";
+import { queryApi } from "./core/trpcApi.ts";
+import FileForm from "./FileForm.tsx";
 
 export default function App() {
-  const fileNamesQuery = useQuery(api.content.listFiles.queryOptions());
+  const fileNamesQuery = useQuery(queryApi.content.listFiles.queryOptions());
 
   return (
     <>
@@ -14,6 +15,7 @@ export default function App() {
           </li>
         ))}
       </ul>
+      <FileForm onSubmitSuccess={fileNamesQuery.refetch} />
     </>
   );
 }
