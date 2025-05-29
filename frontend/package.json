@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@git-db/backend": "*",
     "@tanstack/react-query": "^5.77.2",
     "@trpc/client": "^11.1.4",
     "@trpc/tanstack-react-query": "^11.1.4",

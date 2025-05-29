@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "src/main.ts",
   "private": true,
+  "types": "./src/exports.d.ts",
   "scripts": {
     "bootstrap": "ts-node scripts/bootstrap.ts",
     "start": "nodemon",
