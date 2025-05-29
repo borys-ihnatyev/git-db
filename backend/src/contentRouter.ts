@@ -1,5 +1,5 @@
 import { Router } from "express";
-import db, { DeleteFilePayload, ModifyFilePayload } from "./core/db";
+import db, { type DeleteFilePayload, type ModifyFilePayload } from "./core/db";
 import ErrorResult from "./core/ErrorResult";
 
 export default Router()

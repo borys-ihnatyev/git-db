@@ -1,5 +1,5 @@
-import path from "path";
-import fs from "fs/promises";
+import * as path from "path";
+import * as fs from "fs/promises";
 import { statSync } from "fs";
 import { type CommitResult, simpleGit } from "simple-git";
 import { DB_PATH, DB_CONTENT_PATH, DB_CONTENT_DIR } from "../../env";

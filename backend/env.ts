@@ -1,4 +1,4 @@
-import path from "path";
+import * as path from "path";
 
 export const DB_PATH = path.resolve(__dirname, "db");
 export const DB_CONTENT_DIR = "content";

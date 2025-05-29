@@ -4,7 +4,10 @@ export type ErrorResponseJSON = {
 };
 
 export default class ErrorResult extends Error implements ErrorResponseJSON {
-  constructor(message = "Unknown error", public status = 500) {
+  status: number;
+
+  constructor(message = "Unknown error", status = 500) {
     super(message);
+    this.status = status;
   }
 }

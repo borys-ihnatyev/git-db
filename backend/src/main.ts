@@ -1,18 +1,16 @@
-import bodyParser from "body-parser";
-import express, {
-  type ErrorRequestHandler,
-  type RequestHandler,
-} from "express";
-import ErrorResult, { ErrorResponseJSON } from "./core/ErrorResult";
+import * as bodyParser from "body-parser";
+import { type ErrorRequestHandler, type RequestHandler } from "express";
+import * as express from "express";
+import ErrorResult, { type ErrorResponseJSON } from "./core/ErrorResult";
 import contentRouter from "./contentRouter";
 import { DB_PATH, PORT } from "../env";
-import cors from "cors";
+import * as cors from "cors";
 
-const notFoundErrorHandler: RequestHandler = (req, res, next) => {
+const notFoundErrorHandler: RequestHandler = (_req, _res, next) => {
   next(new ErrorResult("Not found", 404));
 };
 
-const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
+const globalErrorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
   const maybeError = error as Partial<ErrorResult> | undefined;
   const message = maybeError?.message || "Unknown error";
   const status = maybeError?.status || 500;
