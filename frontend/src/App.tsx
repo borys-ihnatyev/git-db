@@ -8,8 +8,10 @@ export default function App() {
     <>
       <h1>Files</h1>
       <ul>
-        {fileNamesQuery.data?.map((fileName) => (
-          <li key={fileName}>{fileName}</li>
+        {fileNamesQuery.data?.map((info) => (
+          <li key={info.href}>
+            <a href={info.href}>{info.relativePath}</a>
+          </li>
         ))}
       </ul>
     </>

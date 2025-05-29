@@ -5,10 +5,13 @@ import type { AppRouter } from "@git-db/backend";
 
 export const queryClient = new QueryClient();
 
+console.log(import.meta.env.MODE);
+console.log(import.meta.env);
+
 const client = createTRPCClient<AppRouter>({
   links: [
     httpBatchLink({
-      url: "http://localhost:3000/trpc",
+      url: import.meta.env.VITE_API_URL,
     }),
   ],
 });

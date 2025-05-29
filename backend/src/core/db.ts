@@ -2,9 +2,15 @@ import * as path from "path";
 import * as fs from "fs/promises";
 import { statSync } from "fs";
 import { type CommitResult, simpleGit } from "simple-git";
-import { DB_PATH, DB_CONTENT_PATH, DB_CONTENT_DIR } from "../../env";
+import { DB_PATH, DB_CONTENT_PATH, DB_CONTENT_DIR, PORT } from "../../env";
 import ErrorResult from "./ErrorResult";
 import z from "zod";
+
+export type FileInfo = {
+  basename: string;
+  href: string;
+  relativePath: string;
+};
 
 export const FileOperationPayloadSchema = z.object({
   fileName: z.string(),
@@ -73,8 +79,16 @@ const db = {
     };
   },
 
-  async listFiles(): Promise<string[]> {
-    return await fs.readdir(DB_CONTENT_PATH);
+  async listFiles(): Promise<FileInfo[]> {
+    const files = await fs.readdir(DB_CONTENT_PATH);
+    return files.map((basename) => {
+      const relativePath = `${DB_CONTENT_DIR}/${basename}`;
+      return {
+        basename,
+        href: `http://localhost:${PORT}/${relativePath}`,
+        relativePath,
+      };
+    });
   },
 
   async readFile(fileName: string): Promise<ContentShape> {
