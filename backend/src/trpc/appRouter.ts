@@ -5,7 +5,7 @@ import db, {
 import { publicProcedure, router } from "./trpc";
 import z from "zod";
 
-export default router({
+const appRouter = router({
   content: {
     listFiles: publicProcedure.query(db.listFiles),
     getFile: publicProcedure
@@ -19,3 +19,7 @@ export default router({
       .mutation(({ input }) => db.deleteFile(input)),
   },
 });
+
+export default appRouter;
+
+export type AppRouter = typeof appRouter;

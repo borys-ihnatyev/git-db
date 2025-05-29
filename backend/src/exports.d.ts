@@ -1,3 +1,2 @@
-import type appRouter from "./trpc/appRouter";
-
-export type AppRouter = typeof appRouter;
+export type * from "./trpc/appRouter";
+export type * from "./core/db";
