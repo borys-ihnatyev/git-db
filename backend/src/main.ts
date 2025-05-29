@@ -1,10 +1,9 @@
-import * as bodyParser from "body-parser";
 import { type ErrorRequestHandler, type RequestHandler } from "express";
 import * as express from "express";
 import ErrorResult, { type ErrorResponseJSON } from "./core/ErrorResult";
-import contentRouter from "./contentRouter";
 import { DB_PATH, PORT } from "../env";
 import * as cors from "cors";
+import trpcExpressMiddleware from "./trpc/expressMiddleware";
 
 const notFoundErrorHandler: RequestHandler = (_req, _res, next) => {
   next(new ErrorResult("Not found", 404));
@@ -20,8 +19,7 @@ const globalErrorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
 
 express()
   .use(cors())
-  .use(bodyParser.json())
-  .use(contentRouter)
+  .use("/trpc", trpcExpressMiddleware)
   .use(express.static(DB_PATH))
   .use(notFoundErrorHandler)
   .use(globalErrorHandler)

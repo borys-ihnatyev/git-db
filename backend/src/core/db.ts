@@ -4,6 +4,25 @@ import { statSync } from "fs";
 import { type CommitResult, simpleGit } from "simple-git";
 import { DB_PATH, DB_CONTENT_PATH, DB_CONTENT_DIR } from "../../env";
 import ErrorResult from "./ErrorResult";
+import z from "zod";
+
+export const FileOperationPayloadSchema = z.object({
+  fileName: z.string(),
+  commitMessage: z.string().optional(),
+});
+
+export type FileOperationPayload = z.infer<typeof FileOperationPayloadSchema>;
+export type FileOperationResult = Required<FileOperationPayload> & {
+  commitResult: CommitResult;
+};
+
+export const ModifyFilePayloadSchema = FileOperationPayloadSchema.extend({
+  content: z.string(),
+});
+
+export type ModifyFilePayload = z.infer<typeof ModifyFilePayloadSchema>;
+export type ModifyFileResult = Required<ModifyFilePayload> &
+  FileOperationResult;
 
 type BuildPathResult = {
   name: string;
@@ -14,26 +33,12 @@ type ResolvePathResult = BuildPathResult & {
   absolutePath: string;
 };
 
-type OperationPayload = {
-  commitMessage?: string;
-};
-
-type OperationResult = Required<OperationPayload> & {
-  commitResult: CommitResult;
-};
+export type DeleteFilePayload = FileOperationPayload;
+export type DeleteFileResult = ContentShape & FileOperationResult;
 
 export type ContentShape = {
   content: string;
 };
-
-export type ModifyFilePayload = ContentShape & OperationPayload;
-
-export type ModifyFileResult = ContentShape & OperationResult;
-
-export type DeleteFilePayload = OperationPayload | undefined;
-export type DeleteFileResult = Partial<ContentShape> & OperationResult;
-
-const GIT_DIR_NAME = ".git";
 
 try {
   statSync(DB_PATH);
@@ -85,11 +90,10 @@ const db = {
     }
   },
 
-  async modifyFile(
-    fileName: string,
-    payload: ModifyFilePayload
-  ): Promise<ModifyFileResult> {
-    const { absolutePath, name, relativePath } = db.resolveFilePath(fileName);
+  async modifyFile(payload: ModifyFilePayload): Promise<ModifyFileResult> {
+    const { absolutePath, name, relativePath } = db.resolveFilePath(
+      payload.fileName
+    );
     await fs.writeFile(absolutePath, payload.content);
 
     const revisionMessage = payload.commitMessage ?? `modify ${name}`;
@@ -97,17 +101,17 @@ const db = {
     const commitResult = await git.add(relativePath).commit(revisionMessage);
 
     return {
+      fileName: name,
       content: payload.content,
       commitMessage: commitResult.commit ? revisionMessage : "",
       commitResult,
     };
   },
 
-  async deleteFile(
-    fileName: string,
-    payload: DeleteFilePayload
-  ): Promise<DeleteFileResult> {
-    const { absolutePath, name, relativePath } = db.resolveFilePath(fileName);
+  async deleteFile(payload: DeleteFilePayload): Promise<DeleteFileResult> {
+    const { absolutePath, name, relativePath } = db.resolveFilePath(
+      payload.fileName
+    );
     let content: string | undefined;
 
     try {
@@ -122,6 +126,7 @@ const db = {
     const commitResult = await git.add(relativePath).commit(revisionMessage);
 
     return {
+      fileName: name,
       content,
       commitMessage: commitResult.commit ? revisionMessage : "",
       commitResult,

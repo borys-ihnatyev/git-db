@@ -12,13 +12,14 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@trpc/server": "^11.1.4",
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "nodemon": "^3.1.10",
     "simple-git": "^3.27.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
+    "zod": "^3.25.34"
   },
   "devDependencies": {
     "@types/cors": "^2.8.18",
