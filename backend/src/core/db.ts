@@ -30,17 +30,17 @@ export type ModifyFilePayload = z.infer<typeof ModifyFilePayloadSchema>;
 export type ModifyFileResult = Required<ModifyFilePayload> &
   FileOperationResult;
 
-type BuildPathResult = {
+export type DeleteFilePayload = FileOperationPayload;
+export type DeleteFileResult = ContentShape & FileOperationResult;
+
+export type BuildPathResult = {
   name: string;
   relativePath: string;
 };
 
-type ResolvePathResult = BuildPathResult & {
+export type ResolvePathResult = BuildPathResult & {
   absolutePath: string;
 };
-
-export type DeleteFilePayload = FileOperationPayload;
-export type DeleteFileResult = ContentShape & FileOperationResult;
 
 export type ContentShape = {
   content: string;
