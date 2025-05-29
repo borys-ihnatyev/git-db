@@ -2,8 +2,17 @@ import path from "path";
 import fs from "fs/promises";
 import { statSync } from "fs";
 import { type CommitResult, simpleGit } from "simple-git";
-import { DB_PATH } from "../../env";
+import { DB_PATH, DB_CONTENT_PATH, DB_CONTENT_DIR } from "../../env";
 import ErrorResult from "./ErrorResult";
+
+type BuildPathResult = {
+  name: string;
+  relativePath: string;
+};
+
+type ResolvePathResult = BuildPathResult & {
+  absolutePath: string;
+};
 
 type OperationPayload = {
   commitMessage?: string;
@@ -38,30 +47,39 @@ const git = simpleGit(DB_PATH);
 
 const db = {
   sanitizeFileName(rawFileName: string): string {
-    const fileName = path.basename(rawFileName);
-    if (fileName === GIT_DIR_NAME) {
-      throw new ErrorResult("Illegal operation", 400);
-    }
-    return fileName;
+    return path.basename(rawFileName);
   },
 
-  resolveFilePath(fileName: string): string {
-    return path.resolve(DB_PATH, db.sanitizeFileName(fileName));
+  buildFilePath(fileName: string): BuildPathResult {
+    const name = db.sanitizeFileName(fileName);
+    const relativePath = path.join(DB_CONTENT_DIR, name);
+    return {
+      name,
+      relativePath,
+    };
+  },
+
+  resolveFilePath(fileName: string): ResolvePathResult {
+    const buildPathResult = db.buildFilePath(fileName);
+    const absolutePath = path.resolve(DB_PATH, buildPathResult.relativePath);
+    return {
+      ...buildPathResult,
+      absolutePath,
+    };
   },
 
   async listFiles(): Promise<string[]> {
-    return (await fs.readdir(DB_PATH)).filter((name) => name !== GIT_DIR_NAME);
+    return await fs.readdir(DB_CONTENT_PATH);
   },
 
   async readFile(fileName: string): Promise<ContentShape> {
-    const sanitizedFileName = db.sanitizeFileName(fileName);
-    const filePath = db.resolveFilePath(fileName);
+    const { absolutePath, name } = db.resolveFilePath(fileName);
     try {
-      const content = await fs.readFile(filePath, { encoding: "utf-8" });
+      const content = await fs.readFile(absolutePath, { encoding: "utf-8" });
       return { content };
     } catch (error: any) {
       if (error?.code === "ENOENT") {
-        throw new ErrorResult(`File ${sanitizedFileName} was not found`, 404);
+        throw new ErrorResult(`File ${name} was not found`, 404);
       }
       throw error;
     }
@@ -71,16 +89,12 @@ const db = {
     fileName: string,
     payload: ModifyFilePayload
   ): Promise<ModifyFileResult> {
-    const sanitizedFileName = db.sanitizeFileName(fileName);
-    const filePath = db.resolveFilePath(fileName);
-    await fs.writeFile(filePath, payload.content);
+    const { absolutePath, name, relativePath } = db.resolveFilePath(fileName);
+    await fs.writeFile(absolutePath, payload.content);
 
-    const revisionMessage =
-      payload.commitMessage ?? `modify ${sanitizedFileName}`;
+    const revisionMessage = payload.commitMessage ?? `modify ${name}`;
 
-    const commitResult = await git
-      .add(sanitizedFileName)
-      .commit(revisionMessage);
+    const commitResult = await git.add(relativePath).commit(revisionMessage);
 
     return {
       content: payload.content,
@@ -93,23 +107,19 @@ const db = {
     fileName: string,
     payload: DeleteFilePayload
   ): Promise<DeleteFileResult> {
-    const sanitizedFileName = db.sanitizeFileName(fileName);
-    const filePath = db.resolveFilePath(fileName);
+    const { absolutePath, name, relativePath } = db.resolveFilePath(fileName);
     let content: string | undefined;
 
     try {
-      content = await fs.readFile(filePath, { encoding: "utf-8" });
-      await fs.rm(filePath);
+      content = await fs.readFile(absolutePath, { encoding: "utf-8" });
+      await fs.rm(absolutePath);
     } catch {
-      throw new ErrorResult(`File ${sanitizedFileName} was not found`, 404);
+      throw new ErrorResult(`File ${name} was not found`, 404);
     }
 
-    const revisionMessage =
-      payload?.commitMessage ?? `delete ${sanitizedFileName}`;
+    const revisionMessage = payload?.commitMessage ?? `delete ${name}`;
 
-    const commitResult = await git
-      .add(sanitizedFileName)
-      .commit(revisionMessage);
+    const commitResult = await git.add(relativePath).commit(revisionMessage);
 
     return {
       content,
