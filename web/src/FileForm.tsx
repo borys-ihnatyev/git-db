@@ -1,5 +1,6 @@
 import type { ModifyFilePayload } from "@git-db/api";
 import { api } from "./core/trpcApi";
+import Button from "./ui/Button";
 
 type Props = {
   onSubmitSuccess?: VoidFunction;
@@ -42,7 +43,7 @@ export default function FileForm({ onSubmitSuccess }: Props) {
         placeholder="Commit message"
       ></input>
 
-      <button type="submit">Create/Modify</button>
+      <Button type="submit">Create/Modify</Button>
     </form>
   );
 }

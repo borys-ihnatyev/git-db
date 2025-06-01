@@ -5,5 +5,8 @@
     { "path": "web" },
     { "path": "packages/config" }
   ],
-  "settings": {}
+  "settings": {},
+  "extensions": {
+    "recommendations": ["bradlc.vscode-tailwindcss"]
+  }
 }
