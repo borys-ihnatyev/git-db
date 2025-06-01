@@ -1,7 +1,9 @@
 {
   "extends": "@git-db/config/tsconfig.node.json",
   "compilerOptions": {
-    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo"
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext"
   },
   "include": ["src", "env.ts", "scripts"]
 }

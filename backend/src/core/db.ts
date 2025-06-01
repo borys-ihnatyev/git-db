@@ -2,8 +2,8 @@ import * as path from "path";
 import * as fs from "fs/promises";
 import { statSync } from "fs";
 import { type CommitResult, simpleGit } from "simple-git";
-import { DB_PATH, DB_CONTENT_PATH, DB_CONTENT_DIR, PORT } from "../../env";
-import ErrorResult from "./ErrorResult";
+import { DB_PATH, DB_CONTENT_PATH, DB_CONTENT_DIR, PORT } from "../../env.ts";
+import ErrorResult from "./ErrorResult.ts";
 import z from "zod";
 
 export type FileInfo = {

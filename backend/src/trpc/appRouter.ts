@@ -1,8 +1,8 @@
 import db, {
   FileOperationPayloadSchema,
   ModifyFilePayloadSchema,
-} from "../core/db";
-import { publicProcedure, router } from "./trpc";
+} from "../core/db.ts";
+import { publicProcedure, router } from "./trpc.ts";
 import z from "zod";
 
 const appRouter = router({

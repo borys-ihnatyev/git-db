@@ -1,0 +1,5 @@
+{
+  "watch": ["src", "env.ts"],
+  "ext": "ts",
+  "exec": "node --experimental-strip-types src/main.ts"
+}

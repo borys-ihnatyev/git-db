@@ -1,13 +1,13 @@
 {
   "name": "@git-db/backend",
   "version": "1.0.0",
+  "type": "module",
   "main": "src/main.ts",
   "private": true,
   "types": "./src/exports.d.ts",
   "scripts": {
-    "bootstrap": "ts-node scripts/bootstrap.ts",
-    "dev": "nodemon",
-    "build": "tsc -b"
+    "bootstrap": "node --experimental-strip-types scripts/bootstrap.ts",
+    "dev": "nodemon"
   },
   "author": "",
   "license": "ISC",
@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@git-db/config": "^1.0.0",
+    "@tsconfig/node22": "^22.0.2",
     "@types/cors": "^2.8.18",
     "@types/express": "^5.0.2",
     "typescript": "^5.8.3"

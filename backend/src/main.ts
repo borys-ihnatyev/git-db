@@ -1,9 +1,9 @@
 import { type ErrorRequestHandler, type RequestHandler } from "express";
-import * as express from "express";
-import ErrorResult, { type ErrorResponseJSON } from "./core/ErrorResult";
-import { DB_PATH, PORT } from "../env";
-import * as cors from "cors";
-import trpcExpressMiddleware from "./trpc/expressMiddleware";
+import express from "express";
+import ErrorResult, { type ErrorResponseJSON } from "./core/ErrorResult.ts";
+import { DB_PATH, PORT } from "../env.ts";
+import cors from "cors";
+import trpcExpressMiddleware from "./trpc/expressMiddleware.ts";
 
 const notFoundErrorHandler: RequestHandler = (_req, _res, next) => {
   next(new ErrorResult("Not found", 404));
