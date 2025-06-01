@@ -13,7 +13,7 @@ export default function App() {
       <Heading>Files</Heading>
       <ul>
         {fileNamesQuery.data?.map((info) => (
-          <li key={info.href} className="flex place-items-center">
+          <li key={info.href} className="inline-flex place-items-center gap-2">
             <Link href={info.href} className="flex-1">
               {info.relativePath}
             </Link>
