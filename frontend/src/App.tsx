@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { queryApi } from "./core/trpcApi.ts";
+import { api, queryApi } from "./core/trpcApi.ts";
 import FileForm from "./FileForm.tsx";
 
 export default function App() {
@@ -12,6 +12,16 @@ export default function App() {
         {fileNamesQuery.data?.map((info) => (
           <li key={info.href}>
             <a href={info.href}>{info.relativePath}</a>
+            <button
+              onClick={async () => {
+                await api.content.deleteFile.mutate({
+                  fileName: info.basename,
+                });
+                await fileNamesQuery.refetch();
+              }}
+            >
+              delete
+            </button>
           </li>
         ))}
       </ul>
