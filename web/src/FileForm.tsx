@@ -1,4 +1,4 @@
-import type { ModifyFilePayload } from "@git-db/backend";
+import type { ModifyFilePayload } from "@git-db/api";
 import { api } from "./core/trpcApi";
 
 type Props = {

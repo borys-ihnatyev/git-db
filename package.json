@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "packageManager": "npm@10.8.2",
   "workspaces": [
-    "backend",
-    "frontend",
+    "api",
+    "web",
     "packages/**"
   ],
   "scripts": {

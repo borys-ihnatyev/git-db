@@ -1,8 +1,9 @@
 {
   "folders": [
     { "path": "./", "name": "root" },
-    { "path": "backend" },
-    { "path": "frontend" },
+    { "path": "api" },
+    { "path": "web" },
     { "path": "packages/config" }
-  ]
+  ],
+  "settings": {}
 }

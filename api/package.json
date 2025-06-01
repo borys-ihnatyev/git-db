@@ -1,5 +1,5 @@
 {
-  "name": "@git-db/backend",
+  "name": "@git-db/api",
   "version": "1.0.0",
   "type": "module",
   "main": "src/main.ts",

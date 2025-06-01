@@ -1,6 +1,6 @@
 import fs from "fs/promises";
 import simpleGit from "simple-git";
-import { DB_CONTENT_PATH, DB_PATH } from "../env";
+import { DB_CONTENT_PATH, DB_PATH } from "../env.ts";
 
 (async () => {
   await fs.mkdir(DB_CONTENT_PATH, { recursive: true });
