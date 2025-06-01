@@ -6,8 +6,7 @@
   "types": "./src/exports.d.ts",
   "scripts": {
     "bootstrap": "ts-node scripts/bootstrap.ts",
-    "start": "nodemon",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon"
   },
   "author": "",
   "license": "ISC",
