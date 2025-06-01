@@ -6,7 +6,8 @@
   "types": "./src/exports.d.ts",
   "scripts": {
     "bootstrap": "ts-node scripts/bootstrap.ts",
-    "dev": "nodemon"
+    "dev": "nodemon",
+    "build": "tsc -b"
   },
   "author": "",
   "license": "ISC",
@@ -22,7 +23,9 @@
     "zod": "^3.25.34"
   },
   "devDependencies": {
+    "@git-db/config": "^1.0.0",
     "@types/cors": "^2.8.18",
-    "@types/express": "^5.0.2"
+    "@types/express": "^5.0.2",
+    "typescript": "^5.8.3"
   }
 }
