@@ -1,15 +1,11 @@
 {
   "name": "git-db",
   "version": "1.0.0",
-  "packageManager": "npm@11.4.1",
-  "workspaces": [
-    "api",
-    "web",
-    "packages/**"
-  ],
+  "packageManager": "pnpm@10.11.0",
   "scripts": {
-    "start": "turbo run dev",
-    "build": "turbo run build"
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "bootstrap": "turbo run bootstrap"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +16,6 @@
   },
   "engines": {
     "node": "22.16.0",
-    "npm": "11.4.1"
+    "pnpm": "10.11.0"
   }
 }

@@ -1,0 +1,10 @@
+packages:
+  - api
+  - web
+  - packages/**
+catalog:
+  typescript: 5.8.3
+onlyBuiltDependencies:
+  - '@swc/core'
+  - '@tailwindcss/oxide'
+  - esbuild
