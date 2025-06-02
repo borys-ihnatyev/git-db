@@ -1,5 +1,5 @@
 import fs from "fs/promises";
-import simpleGit from "simple-git";
+import { simpleGit } from "simple-git";
 import { DB_CONTENT_PATH, DB_PATH } from "../env.ts";
 
 (async () => {
