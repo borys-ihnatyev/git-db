@@ -1,5 +1,5 @@
 {
-  "name": "@git-db/frontend",
+  "name": "@git-db/web",
   "private": true,
   "version": "1.0.0",
   "type": "module",

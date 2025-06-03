@@ -1,12 +1,27 @@
 {
   "folders": [
-    { "path": "./", "name": "root" },
-    { "path": "api" },
-    { "path": "web" },
-    { "path": "packages/config" }
+    {
+      "name": "✨ root",
+      "path": "."
+    },
+    {
+      "name": "🚀 api",
+      "path": "api"
+    },
+    {
+      "name": "📦 config",
+      "path": "packages/config"
+    },
+    {
+      "name": "🚀 web",
+      "path": "web"
+    }
   ],
   "settings": {},
   "extensions": {
-    "recommendations": ["bradlc.vscode-tailwindcss"]
+    "recommendations": [
+      "bradlc.vscode-tailwindcss",
+      "folke.vscode-monorepo-workspace"
+    ]
   }
 }
