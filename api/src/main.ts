@@ -1,28 +1,34 @@
-import { type ErrorRequestHandler, type RequestHandler } from "express";
-import express from "express";
-import ErrorResult, { type ErrorResponseJSON } from "./core/ErrorResult.ts";
+import Fastify from "fastify";
+import cors from "@fastify/cors";
+import statics from "@fastify/static";
+import {
+  fastifyTRPCPlugin,
+  type FastifyTRPCPluginOptions,
+} from "@trpc/server/adapters/fastify";
 import { DB_PATH, PORT } from "../env.ts";
-import cors from "cors";
-import trpcExpressMiddleware from "./trpc/expressMiddleware.ts";
+import appRouter, { type AppRouter } from "./trpc/appRouter.ts";
 
-const notFoundErrorHandler: RequestHandler = (_req, _res, next) => {
-  next(new ErrorResult("Not found", 404));
-};
+const api = Fastify({
+  logger: {
+    transport: {
+      target: "pino-pretty",
+    },
+  },
+});
 
-const globalErrorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
-  const maybeError = error as Partial<ErrorResult> | undefined;
-  const message = maybeError?.message || "Unknown error";
-  const status = maybeError?.status || 500;
+await api.register(cors, {});
+await api.register(fastifyTRPCPlugin, {
+  prefix: "/trpc",
+  trpcOptions: {
+    router: appRouter,
+    onError({ path, error }) {
+      api.log.error(`Error in tRPC handler on path '${path}':`, error);
+    },
+  },
+} satisfies FastifyTRPCPluginOptions<AppRouter>);
 
-  res.status(status).send({ status, message } satisfies ErrorResponseJSON);
-};
+await api.register(statics, {
+  root: DB_PATH,
+});
 
-express()
-  .use(cors())
-  .use("/trpc", trpcExpressMiddleware)
-  .use(express.static(DB_PATH))
-  .use(notFoundErrorHandler)
-  .use(globalErrorHandler)
-  .listen(PORT, () => {
-    console.log(`Listening on http://localhost:${PORT}`);
-  });
+await api.listen({ port: PORT });
