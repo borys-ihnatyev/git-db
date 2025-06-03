@@ -16,7 +16,7 @@ export default function Button({
   return (
     <button
       type={type}
-      className={`bg-blue-600 text-white font-semibold py-2 px-4 rounded hover:bg-blue-700 active:bg-blue-900 cursor-pointer ${className}`}
+      className={`bg-blue-600 text-white font-semibold py-3 px-4 rounded-2xl hover:bg-blue-700 active:bg-blue-900 cursor-pointer ${className}`}
       onClick={onClick}
     >
       {children}

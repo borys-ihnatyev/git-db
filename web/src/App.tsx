@@ -9,29 +9,31 @@ export default function App() {
   const fileNamesQuery = useQuery(queryApi.content.listFiles.queryOptions());
 
   return (
-    <>
-      <Heading>Files</Heading>
-      <ul>
-        {fileNamesQuery.data?.map((info) => (
-          <li key={info.href} className="inline-flex place-items-center gap-2">
-            <Link href={info.href} className="flex-1">
-              {info.relativePath}
-            </Link>
-            <Button
-              className="flex-1"
-              onClick={async () => {
-                await api.content.deleteFile.mutate({
-                  fileName: info.basename,
-                });
-                await fileNamesQuery.refetch();
-              }}
-            >
-              delete
-            </Button>
-          </li>
-        ))}
-      </ul>
-      <FileForm onSubmitSuccess={fileNamesQuery.refetch} />
-    </>
+    <div className="flex place-content-center size-full">
+      <div className="flex flex-col gap-y-8 p-8 min-w-xl">
+        <Heading>Files</Heading>
+        <ul className="flex flex-col gap-y-4">
+          {fileNamesQuery.data?.map((info) => (
+            <li key={info.href} className="flex place-items-center gap-2">
+              <Link href={info.href} className="flex-1">
+                {info.relativePath}
+              </Link>
+              <Button
+                className="flex-0.5"
+                onClick={async () => {
+                  await api.content.deleteFile.mutate({
+                    fileName: info.basename,
+                  });
+                  await fileNamesQuery.refetch();
+                }}
+              >
+                Delete
+              </Button>
+            </li>
+          ))}
+        </ul>
+        <FileForm onSubmitSuccess={fileNamesQuery.refetch} />
+      </div>
+    </div>
   );
 }

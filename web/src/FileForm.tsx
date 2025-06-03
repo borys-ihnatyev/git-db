@@ -1,6 +1,9 @@
 import type { ModifyFilePayload } from "@git-db/api";
 import { api } from "./core/trpcApi";
 import Button from "./ui/Button";
+import Input from "./ui/Input";
+import TextArea from "./ui/TextArea";
+import Form from "./ui/Form";
 
 type Props = {
   onSubmitSuccess?: VoidFunction;
@@ -23,27 +26,22 @@ export default function FileForm({ onSubmitSuccess }: Props) {
   };
 
   return (
-    <form action={onSubmit}>
-      <input
-        required
-        name="fileName"
-        type="text"
-        placeholder="File name"
-      ></input>
+    <Form action={onSubmit}>
+      <Input required name="fileName" type="text" placeholder="File name" />
 
-      <textarea
+      <TextArea
         required
         name="content"
         placeholder="Text content of the file"
-      ></textarea>
+      />
 
-      <input
+      <Input
         type="text"
         name="commitMessage"
-        placeholder="Commit message"
-      ></input>
+        placeholder="Commit message (Optional)"
+      />
 
-      <Button type="submit">Create/Modify</Button>
-    </form>
+      <Button type="submit">Create or Modify</Button>
+    </Form>
   );
 }
