@@ -82,3 +82,11 @@ pnpm dev
 ```
 
 This will launch **api** and **web** packages in dev mode
+
+## Editor setup -
+
+**VS Code**:
+
+To work with comfortable and without typescript errors, open the project via `git-db.code-workspace` file.
+
+And install recommended extensions.
