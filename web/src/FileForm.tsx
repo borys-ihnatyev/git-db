@@ -4,6 +4,7 @@ import Button from "./ui/Button";
 import Input from "./ui/Input";
 import TextArea from "./ui/TextArea";
 import Form from "./ui/Form";
+import Heading from "./ui/Heading";
 
 type Props = {
   onSubmitSuccess?: VoidFunction;
@@ -26,22 +27,25 @@ export default function FileForm({ onSubmitSuccess }: Props) {
   };
 
   return (
-    <Form action={onSubmit}>
-      <Input required name="fileName" type="text" placeholder="File name" />
+    <>
+      <Heading>Create or modify file</Heading>
+      <Form action={onSubmit}>
+        <Input required name="fileName" type="text" placeholder="File name" />
 
-      <TextArea
-        required
-        name="content"
-        placeholder="Text content of the file"
-      />
+        <TextArea
+          required
+          name="content"
+          placeholder="Text content of the file"
+        />
 
-      <Input
-        type="text"
-        name="commitMessage"
-        placeholder="Commit message (Optional)"
-      />
+        <Input
+          type="text"
+          name="commitMessage"
+          placeholder="Commit message (Optional)"
+        />
 
-      <Button type="submit">Create or Modify</Button>
-    </Form>
+        <Button type="submit">Create or Modify</Button>
+      </Form>
+    </>
   );
 }

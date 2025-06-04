@@ -8,7 +8,7 @@ export default function Heading({ children, size = 1 }: Props) {
   const type = "h" + size;
 
   return createElement(type, {
-    className: "font-bold text-9xl",
+    className: "font-bold text-6xl",
     children,
   });
 }
