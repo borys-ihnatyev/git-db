@@ -17,6 +17,22 @@ const appRouter = router({
     deleteFile: publicProcedure
       .input(FileOperationPayloadSchema)
       .mutation(({ input }) => db.deleteFile(input)),
+    fileChange: publicProcedure.subscription(async function* ({ signal }) {
+      const fileChanges = db.fileChangeAsyncIterable(signal);
+
+      for await (const fileChange of fileChanges) {
+        yield fileChange;
+      }
+    }),
+    listFiles$: publicProcedure.subscription(async function* ({ signal }) {
+      const fileChanges = db.fileChangeAsyncIterable(signal);
+
+      yield await db.listFiles();
+
+      for await (const _ of fileChanges) {
+        yield await db.listFiles();
+      }
+    }),
   },
 });
 

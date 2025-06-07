@@ -5,12 +5,7 @@ import { type CommitResult, simpleGit } from "simple-git";
 import { DB_PATH, DB_CONTENT_PATH, DB_CONTENT_DIR, PORT } from "../../env.ts";
 import ErrorResult from "./ErrorResult.ts";
 import z from "zod";
-
-export type FileInfo = {
-  basename: string;
-  href: string;
-  relativePath: string;
-};
+import type { FileInfo } from "./FileInfo.ts";
 
 export const FileOperationPayloadSchema = z.object({
   fileName: z.string(),
@@ -46,6 +41,11 @@ export type ContentShape = {
   content: string;
 };
 
+export type FileChangePayload = {
+  type: "created" | "modified" | "deleted";
+  fileInfo: FileInfo;
+};
+
 try {
   statSync(DB_PATH);
 } catch {
@@ -55,6 +55,15 @@ try {
 }
 
 const git = simpleGit(DB_PATH);
+
+function makeFileInfo(basename: string): FileInfo {
+  const relativePath = `${DB_CONTENT_DIR}/${basename}`;
+  return {
+    basename,
+    href: `http://localhost:${PORT}/${relativePath}`,
+    relativePath,
+  };
+}
 
 const db = {
   sanitizeFileName(rawFileName: string): string {
@@ -81,14 +90,41 @@ const db = {
 
   async listFiles(): Promise<FileInfo[]> {
     const files = await fs.readdir(DB_CONTENT_PATH);
-    return files.map((basename) => {
-      const relativePath = `${DB_CONTENT_DIR}/${basename}`;
-      return {
-        basename,
-        href: `http://localhost:${PORT}/${relativePath}`,
-        relativePath,
-      };
+    return files.map(makeFileInfo);
+  },
+
+  async *fileChangeAsyncIterable(
+    signal?: AbortSignal
+  ): AsyncIterable<FileChangePayload> {
+    const changes = fs.watch(DB_CONTENT_PATH, {
+      signal,
+      recursive: false,
+      persistent: true,
     });
+
+    for await (const change of changes) {
+      if (typeof change.filename !== "string") {
+        continue;
+      }
+
+      const filePath = db.resolveFilePath(change.filename);
+      const fileInfo = makeFileInfo(change.filename);
+
+      try {
+        const stats = await fs.stat(filePath.absolutePath);
+        const createdAt = stats.birthtime.getTime();
+        const modifiedAt = stats.mtime.getTime();
+        yield {
+          type: createdAt === modifiedAt ? "created" : "modified",
+          fileInfo,
+        };
+      } catch {
+        yield {
+          type: "deleted",
+          fileInfo,
+        };
+      }
+    }
   },
 
   async readFile(fileName: string): Promise<ContentShape> {

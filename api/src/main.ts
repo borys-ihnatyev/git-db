@@ -1,6 +1,7 @@
 import Fastify from "fastify";
-import cors from "@fastify/cors";
-import statics from "@fastify/static";
+import corsPlugin from "@fastify/cors";
+import staticsPlugin from "@fastify/static";
+import webSocketsPlugin from "@fastify/websocket";
 import {
   fastifyTRPCPlugin,
   type FastifyTRPCPluginOptions,
@@ -16,9 +17,11 @@ const api = Fastify({
   },
 });
 
-await api.register(cors, {});
+await api.register(corsPlugin);
+await api.register(webSocketsPlugin);
 await api.register(fastifyTRPCPlugin, {
   prefix: "/trpc",
+  useWSS: true,
   trpcOptions: {
     router: appRouter,
     onError({ path, error }) {
@@ -27,7 +30,7 @@ await api.register(fastifyTRPCPlugin, {
   },
 } satisfies FastifyTRPCPluginOptions<AppRouter>);
 
-await api.register(statics, {
+await api.register(staticsPlugin, {
   root: DB_PATH,
 });
 
