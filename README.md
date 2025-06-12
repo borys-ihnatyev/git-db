@@ -2,12 +2,11 @@
 
 This project uses:
 
-- Node.js `22.16.0` (defined in `.nvmrc`)
-- `pnpm` package manager `10.11.0`
+- Node.js `22.16.0` (defined in `.nvmrc`, `package.json`)
+- `pnpm` package manager `10.11.0` (defined in `package.json`)
 
 ## Prerequisites
 
-- **[NVM](https://github.com/nvm-sh/nvm)**: Node Version Manager
 - **[PNPM](https://pnpm.io/installation)**: Fast, disk space efficient package manager
 
 ---
@@ -34,6 +33,13 @@ nvm use
 ```
 
 > This will install and use Node.js `22.16.0` as defined in the `.nvmrc` file.
+
+On **Windows** use explicit install:
+
+```bash
+nvm install v22.16.0 # <version from .nvmrc>
+nvm use
+```
 
 ---
 
