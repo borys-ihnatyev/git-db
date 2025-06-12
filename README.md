@@ -83,7 +83,7 @@ pnpm dev
 
 This will launch **api** and **web** packages in dev mode
 
-## Editor setup -
+## Editor setup
 
 **VS Code**:
 
