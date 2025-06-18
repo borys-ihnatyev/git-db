@@ -1,8 +1,8 @@
 import type { FileInfo } from "@git-db/api";
-import Heading from "./ui/Heading";
-import Link from "./ui/Link";
-import Button from "./ui/Button";
-import { api } from "./core/trpcApi";
+import Heading from "./ui/Heading.tsx";
+import Link from "./ui/Link.tsx";
+import Button from "./ui/Button.tsx";
+import { api } from "./core/trpcApi.ts";
 
 type Props = {
   files?: FileInfo[];

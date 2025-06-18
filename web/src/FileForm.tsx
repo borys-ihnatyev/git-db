@@ -1,10 +1,10 @@
 import type { ModifyFilePayload } from "@git-db/api";
 import { api } from "./core/trpcApi";
-import Button from "./ui/Button";
-import Input from "./ui/Input";
-import TextArea from "./ui/TextArea";
-import Form from "./ui/Form";
-import Heading from "./ui/Heading";
+import Button from "./ui/Button.tsx";
+import Input from "./ui/Input.tsx";
+import TextArea from "./ui/TextArea.tsx";
+import Form from "./ui/Form.tsx";
+import Heading from "./ui/Heading.tsx";
 
 type Props = {
   onSubmitSuccess?: VoidFunction;
